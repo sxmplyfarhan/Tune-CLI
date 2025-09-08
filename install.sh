@@ -6,6 +6,7 @@ RESET="\033[0m"
 
 echo -e "${MAGENTA}✨ Welcome to the Tune installer/updater!${RESET}"
 
+# Detect Linux distro
 OS=""
 if [ -f /etc/os-release ]; then
     . /etc/os-release
@@ -24,14 +25,17 @@ fi
 
 echo -e "${MAGENTA}Detected OS: $OS${RESET}"
 
+# Require sudo for Linux systems (except NixOS)
 if [[ "$OS" != "nixos" ]]; then
     sudo -v || { echo -e "${RED}Cannot continue without sudo!${RESET}"; exit 1; }
 fi
 
+# Pull latest version from GitHub
 TMPDIR=$(mktemp -d)
 echo -e "${MAGENTA}📡 Pulling latest version from GitHub...${RESET}"
 git clone https://github.com/sxmplyfarhan/Tune-CLI.git "$TMPDIR" >/dev/null 2>&1 || { echo -e "${RED}Failed to clone repo.${RESET}"; exit 1; }
 
+# Install dependencies
 echo -e "${MAGENTA}⚙️ Installing dependencies...${RESET}"
 
 case "$OS" in
@@ -48,13 +52,16 @@ esac
 
 echo -e "${MAGENTA}✅ Dependencies installed!${RESET}"
 
+# Install/update Tune
 echo -e "${MAGENTA}🚀 Installing/updating Tune...${RESET}"
 sudo cp "$TMPDIR/tune" /usr/local/bin/tune
 sudo chmod +x /usr/local/bin/tune
 echo -e "${MAGENTA}✅ Tune installed/updated at /usr/local/bin/tune${RESET}"
 
+# Clean up
 rm -rf "$TMPDIR"
 
+# Show guide
 echo -e "\n${MAGENTA}🎵 Tune Guide:${RESET}"
 echo "-----------------------------------"
 echo "Run your player: tune play"
@@ -74,5 +81,3 @@ echo "  q / ESC Quit"
 echo "Default music folder: ~/.play_default_dir"
 echo "-----------------------------------"
 echo -e "${MAGENTA}Enjoy your music! 🎵${RESET}"
-
-
