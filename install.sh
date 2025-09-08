@@ -1,100 +1,117 @@
 #!/usr/bin/env bash
 
-# =========================
-# Magenta + Red Installer / Updater for tune-
-# =========================
 
-REPO="https://github.com/sxmplyfarhan/Tune-CLI.git"
-PLAYER_NAME="tune"
-PLAYER_SCRIPT="$PWD/tune"   # your local file
-INSTALL_PATH="/usr/local/bin/$PLAYER_NAME"
-TMP_DIR="/tmp/tune-install"
+RED="\033[1;31m"
+MAGENTA="\033[1;35m"
+CYAN="\033[1;31m"
+GREEN="\033[1;31m"
+YELLOW="\033[1;31m"
+RESET="\033[0m"
 
-# Color codes
-RED='\033[1;31m'
-MAGENTA='\033[1;35m'
-NC='\033[0m' # No Color
-
-echo -e "${MAGENTA}✨ Welcome to the ${PLAYER_NAME} installer/updater!${NC}"
-
-# Prompt for sudo upfront
-echo -e "${MAGENTA}⚡ Some actions require sudo privileges.${NC}"
-sudo -v || { echo -e "${RED}❌ Failed to authenticate sudo.${NC}"; exit 1; }
-
-# Pull latest from GitHub
-echo -e "${MAGENTA}📡 Pulling latest version from GitHub...${NC}"
-rm -rf "$TMP_DIR"
-git clone --depth=1 "$REPO" "$TMP_DIR" || { echo -e "${RED}❌ Failed to clone repository.${NC}"; exit 1; }
-
-# Use the latest script
-PLAYER_SCRIPT="$TMP_DIR/tune"
-
-# Detect distro and install dependencies
-install_deps() {
-    if command -v pacman &> /dev/null; then
-        echo -e "${MAGENTA}Detected Arch-based system.${NC}"
-        echo -e "${MAGENTA}Installing dependencies: mpv, ffmpeg, python-mutagen...${NC}"
-        sudo pacman -Sy --noconfirm mpv ffmpeg python-mutagen || { echo -e "${RED}❌ Failed to install dependencies.${NC}"; exit 1; }
-    elif command -v apt &> /dev/null; then
-        echo -e "${MAGENTA}Detected Debian/Ubuntu system.${NC}"
-        echo -e "${MAGENTA}Updating package list...${NC}"
-        sudo apt update
-        echo -e "${MAGENTA}Installing dependencies: mpv, ffmpeg, python3-mutagen...${NC}"
-        sudo apt install -y mpv ffmpeg python3-mutagen || { echo -e "${RED}❌ Failed to install dependencies.${NC}"; exit 1; }
-    elif command -v dnf &> /dev/null; then
-        echo -e "${MAGENTA}Detected Fedora system.${NC}"
-        echo -e "${MAGENTA}Installing dependencies: mpv, ffmpeg, python3-mutagen...${NC}"
-        sudo dnf install -y mpv ffmpeg python3-mutagen || { echo -e "${RED}❌ Failed to install dependencies.${NC}"; exit 1; }
-    else
-        echo -e "${RED}❌ Unsupported Linux distro!${NC}"
-        echo -e "${MAGENTA}Please install mpv, ffmpeg, and python-mutagen manually.${NC}"
-        exit 1
-    fi
-}
-
-# Install or update the player
-install_player() {
-    if [[ -f "$INSTALL_PATH" ]]; then
-        echo -e "${MAGENTA}Updating existing ${PLAYER_NAME}...${NC}"
-    else
-        echo -e "${MAGENTA}Installing ${PLAYER_NAME} for the first time...${NC}"
-    fi
-
-    if [[ -f "$PLAYER_SCRIPT" ]]; then
-        chmod +x "$PLAYER_SCRIPT"
-        sudo cp "$PLAYER_SCRIPT" "$INSTALL_PATH"
-        sudo chmod +x "$INSTALL_PATH"
-        echo -e "${MAGENTA}✅ ${PLAYER_NAME} is now installed/updated at ${INSTALL_PATH}${NC}"
-    else
-        echo -e "${RED}❌ Player script not found at ${PLAYER_SCRIPT}${NC}"
-        exit 1
-    fi
-}
-
-# Print a mini-guide
-print_guide() {
-    echo -e "\n${MAGENTA}🎵 ${PLAYER_NAME} Guide:${NC}"
-    echo -e "${MAGENTA}-----------------------------------${NC}"
-    echo -e "${RED}Run your player:${NC} tune-"
-    echo -e "${RED}Controls:${NC}"
-    echo -e "  p       Pause/Play"
-    echo -e "  n / ↓   Next track"
-    echo -e "  b / ↑   Previous track"
-    echo -e "  ← / →   Seek backward/forward"
-    echo -e "  r       Repeat mode (None / All / Track)"
-    echo -e "  s       Shuffle"
-    echo -e "  q / ESC Quit"
-    echo -e "${RED}Default music folder:${NC} ~/.play_default_dir"
-    echo -e "${MAGENTA}-----------------------------------${NC}"
-    echo -e "${MAGENTA}Enjoy your music! 🎵${NC}"
-}
-
-# Execute
-install_deps
-install_player
-print_guide
-
-# Clean up
-rm -rf "$TMP_DIR"
+echo -e "${MAGENTA}✨ Welcome to the Tune installer/updater!${RESET}"
 
 
+OS=""
+UNAME=$(uname)
+case "$UNAME" in
+    Linux*)
+        if [ -f /etc/os-release ]; then
+            . /etc/os-release
+            case "$ID" in
+                arch|manjaro) OS="arch" ;;
+                ubuntu|debian|pop) OS="debian" ;;
+                fedora) OS="fedora" ;;
+                void) OS="void" ;;
+                alpine) OS="alpine" ;;
+                opensuse*|suse) OS="opensuse" ;;
+                gentoo) OS="gentoo" ;;
+                nixos) OS="nixos" ;;
+                *) OS="linux-unknown" ;;
+            esac
+        fi
+        ;;
+    Darwin*) OS="macos" ;;
+    MINGW*|MSYS*|CYGWIN*) OS="windows" ;;
+    *) OS="unknown" ;;
+esac
+
+echo -e "${CYAN}Detected OS: $OS${RESET}"
+
+if [[ "$OS" != "windows" && "$OS" != "nixos" ]]; then
+    sudo -v || { echo -e "${RED}Cannot continue without sudo!${RESET}"; exit 1; }
+fi
+
+TMPDIR=$(mktemp -d)
+echo -e "${CYAN}📡 Pulling latest version from GitHub...${RESET}"
+git clone https://github.com/sxmplyfarhan/Tune-CLI.git "$TMPDIR" >/dev/null 2>&1 || { echo -e "${RED}Failed to clone repo.${RESET}"; exit 1; }
+
+
+echo -e "${CYAN}⚙️ Installing dependencies...${RESET}"
+
+case "$OS" in
+    arch) sudo pacman -S --needed mpv ffmpeg python-mutagen --noconfirm >/dev/null 2>&1 ;;
+    debian) sudo apt update -qq >/dev/null 2>&1; sudo apt install -y mpv ffmpeg python3-mutagen >/dev/null 2>&1 ;;
+    fedora) sudo dnf install -y mpv ffmpeg python3-mutagen >/dev/null 2>&1 ;;
+    void) sudo xbps-install -Sy mpv ffmpeg python3-mutagen >/dev/null 2>&1 ;;
+    alpine) sudo apk add mpv ffmpeg py3-mutagen >/dev/null 2>&1 ;;
+    opensuse) sudo zypper install -y mpv ffmpeg python3-mutagen >/dev/null 2>&1 ;;
+    gentoo) sudo emerge --ask media-sound/mpv media-video/ffmpeg dev-python/mutagen >/dev/null 2>&1 ;;
+    nixos) echo -e "${YELLOW}⚠️  Make sure mpv, ffmpeg, python3Packages.mutagen are in your nix profile${RESET}" ;;
+    macos)
+        if ! command -v brew >/dev/null 2>&1; then
+            echo -e "${RED}Homebrew not found. Install it first: https://brew.sh/${RESET}"
+        else
+            brew install mpv ffmpeg python-mutagen >/dev/null 2>&1
+        fi
+        ;;
+    windows)
+        if command -v winget >/dev/null 2>&1; then
+            winget install --id=MPV.MPV -e --silent
+            winget install --id=FFmpeg.FFmpeg -e --silent
+            python -m pip install mutagen
+        else
+            echo -e "${YELLOW}⚠️  Please install mpv, ffmpeg, and mutagen manually.${RESET}"
+        fi
+        ;;
+    *)
+        echo -e "${RED}Unsupported OS. Install dependencies manually.${RESET}" ;;
+esac
+
+echo -e "${GREEN}✅ Dependencies installed!${RESET}"
+
+
+echo -e "${CYAN}🚀 Installing/updating Tune...${RESET}"
+
+if [[ "$OS" == "windows" ]]; then
+    DEST="$HOME/AppData/Local/Programs/tune"
+    mkdir -p "$DEST"
+    cp "$TMPDIR/tune" "$DEST/tune.py"
+    echo -e "${GREEN}✅ Tune installed at $DEST/tune.py${RESET}"
+else
+    sudo cp "$TMPDIR/tune" /usr/local/bin/tune
+    sudo chmod +x /usr/local/bin/tune
+    echo -e "${GREEN}✅ Tune installed/updated at /usr/local/bin/tune${RESET}"
+fi
+
+rm -rf "$TMPDIR"
+
+
+echo -e "\n${MAGENTA}🎵 Tune Guide:${RESET}"
+echo "-----------------------------------"
+echo "Run your player: tune play"
+echo "Commands:"
+echo "  tune play                  Start playing music"
+echo "  tune set default <folder>  Set default music folder"
+echo "  tune -h                    Show this help"
+echo ""
+echo "Player Controls (when running 'tune play'):"
+echo "  p       Pause/Play"
+echo "  n / ↓   Next track"
+echo "  b / ↑   Previous track"
+echo "  ← / →   Seek backward/forward"
+echo "  r       Repeat mode (None / All / Track)"
+echo "  s       Shuffle"
+echo "  q / ESC Quit"
+echo "Default music folder: ~/.play_default_dir"
+echo "-----------------------------------"
+echo -e "${GREEN}Enjoy your music! 🎵${RESET}"
