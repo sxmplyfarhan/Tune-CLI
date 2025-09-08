@@ -11,7 +11,7 @@ from mutagen.easyid3 import EasyID3
 
 import shutil
 
-# --- Dependency check ---
+
 for cmd in ["mpv", "ffprobe", "python3"]:
     if shutil.which(cmd) is None:
         print(f"Error: {cmd} is not installed. Install it and try again.")
@@ -280,17 +280,7 @@ def main(stdscr):
 
         time.sleep(0.15)
 
-if __name__ == "__main__":
-    if len(sys.argv) >= 3 and sys.argv[1] == "set" and sys.argv[2] == "default":
-        folder = sys.argv[3] if len(sys.argv) >= 4 else os.getcwd()
-        if os.path.isdir(folder):
-            save_default_folder(folder)
-            print(f"Default music folder set to: {folder}")
-            sys.exit(0)
-        else:
-            print("Invalid folder path")
-            sys.exit(1)
-
+def run_player():
     try:
         curses.wrapper(main)
     finally:
@@ -300,6 +290,56 @@ if __name__ == "__main__":
             except:
                 pass
         print("\nGoodbye user.. see you soon. UwU")
+
+def print_help():
+    print("""
+tune CLI - Music Player
+
+Usage:
+  tune play                  Start playing music
+  tune set default <folder>  Set default music folder
+  tune -h, --help            Show this help
+
+Player Controls (when running 'tune play'):
+  p       Pause/Play
+  n / ↓   Next track
+  b / ↑   Previous track
+  ← / →   Seek backward/forward
+  r       Repeat mode (None / All / Track)
+  s       Shuffle
+  q / ESC Quit
+
+Default music folder:
+  ~/.play_default_dir
+
+Enjoy your music! 🎵
+""")
+
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Run 'tune -h' for help")
         sys.exit(0)
 
+    cmd = sys.argv[1]
 
+    if cmd in ("-h", "--help"):
+        print_help()
+        sys.exit(0)
+
+    elif cmd == "play":
+        run_player()
+
+    elif cmd == "set" and len(sys.argv) >= 4 and sys.argv[2] == "default":
+        folder = sys.argv[3]
+        if os.path.isdir(folder):
+            save_default_folder(folder)
+            print(f"Default music folder set to: {folder}")
+        else:
+            print("Invalid folder path")
+            sys.exit(1)
+
+    else:
+        print(f"Unknown command: {cmd}")
+        print("Run 'tune -h' for help")
+        sys.exit(1)
