@@ -37,6 +37,8 @@ It lets you play local music files (`.mp3`, `.webm`, `.mp4`) directly in the ter
 
 ## ⚡ Installation
 
+Works only if your using the linux distros given. Windows and Macos Require manual setup.
+
 ```bash
 # Git clone the repository
 git clone https://github.com/sxmplyfarhan/Tune-CLI.git
