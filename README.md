@@ -61,14 +61,14 @@ sudo ./install.sh
 
 
 # Usage:
-`
+```
   tune play                  Start playing music
   tune set default <folder>  Set default music folder
   tune -h, --help            Show this help
-`
+```
 
 # Player Controls (when running 'tune play'):
-`
+```
   p       Pause/Play
   n / ↓   Next track
   b / ↑   Previous track
@@ -76,11 +76,11 @@ sudo ./install.sh
   r       Repeat mode (None / All / Track)
   s       Shuffle
   q / ESC Quit
-`
+```
 # Default music folder:
-`
+```
   ~/.play_default_dir
-  `
+```
 
 Enjoy your music! 🎵
 
