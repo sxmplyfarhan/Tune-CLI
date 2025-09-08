@@ -1,5 +1,26 @@
 #!/usr/bin/env bash
 
+# License
+# Contributing
+# Feel free to fork and modify for personal use.
+# Do not sell or redistribute the software.
+# Pull requests, bug reports, and suggestions are welcome!
+# License
+# Custom Non-Commercial, No Distribution License (NC-ND)
+# Tune-CLI is provided "as-is". You are free to:
+
+# - Use it personally.
+# - Modify the code for personal projects.
+
+# You MAY NOT:
+
+# - Sell this software or derivatives.
+# - Redistribute or upload this software publicly.
+
+# You MUST:
+
+# - Include this license in any personal modifications.
+
 RED="\033[1;31m"
 MAGENTA="\033[1;35m"
 RESET="\033[0m"

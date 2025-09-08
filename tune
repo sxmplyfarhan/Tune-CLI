@@ -1,4 +1,25 @@
 #!/usr/bin/env python3
+
+# License
+# Contributing
+# Feel free to fork and modify for personal use.
+# Do not sell or redistribute the software.
+# Pull requests, bug reports, and suggestions are welcome!
+# License
+# Custom Non-Commercial, No Distribution License (NC-ND)
+# Tune-CLI is provided "as-is". You are free to:
+
+# - Use it personally.
+# - Modify the code for personal projects.
+
+# You MAY NOT:
+
+# - Sell this software or derivatives.
+# - Redistribute or upload this software publicly.
+
+# You MUST:
+
+# - Include this license in any personal modifications.
 import os
 import sys
 import curses
@@ -8,6 +29,8 @@ import socket
 import json
 import random
 from mutagen.easyid3 import EasyID3
+
+
 
 import shutil
 
