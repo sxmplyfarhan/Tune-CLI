@@ -3,6 +3,10 @@
 Tune-CLI (command `tune`) is a lightweight **terminal music player** for Linux, macOS, and Windows.  
 It lets you play local music files (`.mp3`, `.webm`, `.mp4`) directly in the terminal with colorful, interactive controls.  
 
+## Screenshot:
+
+<img width="855" height="299" alt="image" src="https://github.com/user-attachments/assets/c727b70d-5af5-4ca6-a2f9-206188054070" />
+
 ---
 
 # ⚡ Features
