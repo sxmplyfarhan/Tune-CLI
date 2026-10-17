@@ -1,3 +1,11 @@
+# THIS HAS BEEN ARCHIEVED
+
+IF YOU WANT A NEW UPDATED MUSIC PLAYER CHECK OUT :
+
+https://github.com/sxmplyfarhan/sxmply/
+
+
+
 # 🎵 Tune-CLI
 
 Tune-CLI (command `tune`) is a lightweight **terminal music player** for Linux, macOS, and Windows.  
